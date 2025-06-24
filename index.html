@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dumb Clicker $DUMBER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Slackey&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #333333;
+            --secondary: #666666;
+            --accent: #000000;
+            --bg: #ffffff;
+            --text: #000000;
+            --retro-border: 2px solid var(--accent);
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            border: var(--retro-border);
+            padding: 20px;
+            background-color: var(--bg);
+            position: relative;
+        }
+        
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--accent);
+            padding-bottom: 15px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo img {
+            height: 60px;
+        }
+        
+        .logo-text {
+            font-size: 2.5rem;
+            font-weight: bold;
+  font-family: "Slackey", sans-serif;
+
+            color: var(--text);
+        }
+        
+        .social {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .social a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        
+        .social a:hover {
+            color: var(--accent);
+        }
+        
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+        
+        .play-area {
+            position: relative;
+            height: 520px;
+            border: var(--retro-border);
+            background-color: rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .dumb-image {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        
+        .dumb-image:hover {
+            transform: scale(1.1);
+        }
+        
+        .dumb-image.clicked {
+            animation: explode 0.5s forwards;
+        }
+        
+        @keyframes explode {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        
+        .info-panel {
+            border: var(--retro-border);
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.05);
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .info-panel h2 {
+            margin-top: 0;
+            color: var(--text);
+            border-bottom: 1px solid var(--primary);
+            padding-bottom: 5px;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--primary);
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            transition: width 0.3s;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        
+        .rules {
+            margin-top: 20px;
+        }
+        
+        .rules ul {
+            padding-left: 20px;
+        }
+        
+        .rules li {
+            margin-bottom: 8px;
+        }
+        
+        .contract-info {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            word-break: break-all;
+            background-color: rgba(0, 0, 0, 0.05);
+            padding: 10px;
+            border: 1px solid var(--primary);
+        }
+        
+        .claim-btn {
+            display: none;
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .claim-btn.active {
+            display: block;
+            background-color: var(--accent);
+        }
+        
+        .claim-btn:hover {
+            background-color: var(--secondary);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: var(--bg);
+            border: var(--retro-border);
+            padding: 30px;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .modal h2 {
+            color: var(--accent);
+            margin-top: 0;
+        }
+        
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 15px 0;
+            background-color: rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--text);
+            font-family: 'Courier New', monospace;
+        }
+        
+        .modal button {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border: none;
+            color: var(--text);
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .modal button:hover {
+            transform: scale(1.05);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--secondary);
+            border-top: 1px solid var(--primary);
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="Progetto senza titolo.png" alt="DUMBER Logo">
+                <div class="logo-text">DUMB CLICKER</div>
+            </div>
+            <div class="social">
+                <a href="https://twitter.com/Dumb_Clicker" target="_blank"> @Dumb_Clicker</a>
+            </div>
+        </header>
+        
+        <div class="game-area">
+            <div class="play-area" id="playArea">
+                <!-- Dumb images will spawn here -->
+            </div>
+            
+            <div class="info-panel">
+                <h2>DUMBER STATS</h2>
+                
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">0/100 Dumb Clicks</div>
+                </div>
+                
+                <button class="claim-btn" id="claimBtn">Claim Airdrop</button>
+                
+                <div class="rules">
+                    <h2>RULES</h2>
+                    <ul>
+                        <li>Click all 100 dumb images to claim your $DUMBER</li>
+                        <li>Images will appear faster as you progress</li>
+                        <li>Complete the game to receive your airdrop</li>
+                        <li>Only the worthy will $DUMBER</li>
+                    </ul>
+                </div>
+                
+                <div class="contract-info">
+                    <strong>CONTRACT ADDRESS:</strong><br>
+                    HERE
+                </div>
+                                <div class="contract-info">
+                    <strong>AIRDROP CLAIM</strong><br>
+                    UNLOCK AT 100 DUMB CLICKS
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            $DUMBER - The dumbest clicker game on Solana. Not financial advice. Probably a bad idea.
+        </footer>
+    </div>
+    
+    <div class="modal" id="walletModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeModal">&times;</button>
+            <h2>CLAIM YOUR $DUMBER</h2>
+            <p>Congratulations! You've proven your dumbness.</p>
+            <p>Enter your Solana wallet address to receive your airdrop:</p>
+            <input type="text" id="walletInput" placeholder="DUMBv2xWQj2vDFT1G4QCVq6EhS1VEf2bX2aE7kPyFdLm">
+            <button id="claimButton">CLAIM $DUMBER</button>
+            <p id="successMessage" style="display: none; color: var(--accent); margin-top: 15px;">Success! (Just kidding, this is a fake game)</p>
+        </div>
+    </div>
+    
+    <script>
+        // Game variables
+        let score = 0;
+        let spawnRate = 800; // Initial spawn rate in ms
+        let gameActive = true;
+        const totalTargets = 100; // Increased difficulty
+        const playArea = document.getElementById('playArea');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const walletModal = document.getElementById('walletModal');
+        const closeModal = document.getElementById('closeModal');
+        const claimButton = document.getElementById('claimButton');
+        const successMessage = document.getElementById('successMessage');
+        const claimBtn = document.getElementById('claimBtn');
+        
+        // Play area dimensions
+        const playAreaRect = playArea.getBoundingClientRect();
+        let playAreaWidth = playAreaRect.width;
+        let playAreaHeight = playAreaRect.height;
+        
+        // Array of PNG images
+        const dumbImages = [
+            '1 (2).png',
+            '1 (3).png',
+            '1 (4).png',
+            '1 (5).png',
+            '1 (6).png',
+            '1 (7).png',
+            '1 (8).png',
+            '1 (9).png',
+            '1 (10).png',
+            '2.png'
+        ];
+        
+        // Update progress display
+        function updateProgress() {
+            const percentage = (score / totalTargets) * 100;
+            progressFill.style.width = `${percentage}%`;
+            progressText.textContent = `${score}/${totalTargets} Dumb Clicks`;
+            
+            // Show claim button when game is complete
+            if (score >= totalTargets) {
+                claimBtn.classList.add('active');
+            }
+        }
+        
+        // Create a new dumb image
+        function createDumbImage() {
+            if (!gameActive) return;
+            
+            const dumbImage = document.createElement('div');
+            dumbImage.className = 'dumb-image';
+            
+            // Random image from our array
+            const randomImage = dumbImages[Math.floor(Math.random() * dumbImages.length)];
+            dumbImage.style.backgroundImage = `url('${randomImage}')`;
+            
+            // Random position within play area (considering image size)
+            const maxX = playAreaWidth - 80;
+            const maxY = playAreaHeight - 80;
+            const posX = Math.random() * maxX;
+            const posY = Math.random() * maxY;
+            
+            dumbImage.style.left = `${posX}px`;
+            dumbImage.style.top = `${posY}px`;
+            
+            // Click handler
+            dumbImage.addEventListener('click', function() {
+                if (dumbImage.classList.contains('clicked')) return;
+                
+                dumbImage.classList.add('clicked');
+                score++;
+                updateProgress();
+                
+                // Increase difficulty
+                spawnRate = Math.max(100, spawnRate - 10);
+                
+                // Check if game is complete
+                if (score >= totalTargets) {
+                    gameActive = false;
+                    clearTimeout(spawnTimeout);
+                }
+                
+                // Remove after animation
+                setTimeout(() => {
+                    dumbImage.remove();
+                }, 500);
+            });
+            
+            playArea.appendChild(dumbImage);
+            
+            // Remove if not clicked after 2 seconds (faster disappearance)
+            setTimeout(() => {
+                if (!dumbImage.classList.contains('clicked')) {
+                    dumbImage.remove();
+                }
+            }, 2000);
+        }
+        
+        // Spawn images at intervals
+        function spawnDumbImage() {
+            if (gameActive) {
+                createDumbImage();
+                spawnTimeout = setTimeout(spawnDumbImage, spawnRate);
+            }
+        }
+        
+        // Start the game
+        let spawnTimeout = setTimeout(spawnDumbImage, spawnRate);
+        
+        // Claim button handler
+        claimBtn.addEventListener('click', () => {
+            if (score >= totalTargets) {
+                walletModal.style.display = 'flex';
+            }
+        });
+        
+        // Modal controls
+        closeModal.addEventListener('click', () => {
+            walletModal.style.display = 'none';
+        });
+        
+        claimButton.addEventListener('click', () => {
+            const walletAddress = document.getElementById('walletInput').value.trim();
+            if (walletAddress) {
+                successMessage.style.display = 'block';
+                claimButton.disabled = true;
+                
+                // Fake processing
+                setTimeout(() => {
+                    walletModal.style.display = 'none';
+                    successMessage.style.display = 'none';
+                    claimButton.disabled = false;
+                }, 2000);
+            }
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            const newRect = playArea.getBoundingClientRect();
+            playAreaWidth = newRect.width;
+            playAreaHeight = newRect.height;
+        });
+    </script>
+</body>
+</html>
